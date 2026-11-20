@@ -35,16 +35,8 @@ voice_relay/
 ├── .gitignore                   # Python/git exclusions
 ├── AGENTS.md                    # Agent governance & git hygiene rules
 ├── LICENSE                      # MIT License
-├── OMARCHY_2_AI_HELPERS_ROADMAP.md  # AI helpers roadmap (separate project interest)
-├── OMARCHY_INTEGRATION_GUIDE.md   # Omarchy + voice relay integration details
 ├── README.md                    # Project overview (this file)
 └── .github/
-    ├── ISSUE_TEMPLATE/          # Issue templates for roadmap phases
-    │   ├── phase-1-foundation.yml
-    │   ├── phase-2-context.yml
-    │   ├── phase-3-assistants.yml
-    │   ├── phase4-automation.yml
-    │   └── phase5-ecosystem.yml
     └── PULL_REQUEST_TEMPLATE.md # Standardized PR template
 ```
 
