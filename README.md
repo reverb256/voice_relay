@@ -1,213 +1,126 @@
-# Voice Relay Intercom
+# Voice Relay System
 
-A voice message relay system where an Android device can record a voice message, release a button, and have it broadcast to a Windows PC through a web domain, with Tailscale networking and NSSM background service for speaker playback.
+## Overview
+A voice relay system where an Android device can record a voice message, release a button, and have it broadcast to a Windows PC through a web domain, with Tailscale networking and NSSM background service for speaker playback.
 
-## 📋 Quick Overview
+## Architecture
+- **Flask Python server** (`simplified_server.py`) - Accepts OGG audio uploads from Android PWA, stores messages, serves playback, QR code generation, config persistence
+- **Android PWA interface** - Press & hold to record, release to send, message list with playback
+- **Windows playback** - VLC media player with NSSM background service
+- **Tailscale networking** - Cross-device connectivity via Tailscale VPN
+- **Config persistence** - `~/.voice_relay/config.yaml` with host/port, loads on subsequent runs
 
-| Feature | Status |
-|---------|--------|
-| **Android PWA Interface** | ✅ Press & hold to record, release to send |
-| **OGG/Opus Audio Format** | ✅ Mobile-friendly, small files |
-| **Local Message Storage** | ✅ `voice_messages/` directory |
-| **Two-way Intercom** | ✅ Windows can send messages back |
-| **Tailscale Networking** | ✅ Secure cross-device connectivity |
-| **NSSM Windows Service** | ✅ Background operation |
-| **System Tray (Linux)** | ✅ Optional tray indicator |
-| **QR Code Connection** | ✅ Scan to connect instantly |
-| **Config Persistence** | ✅ `~/.voice_relay/config.yaml` |
-| **Clipboard Auto-copy** | ✅ URL copied on startup |
+## Features
+- ✅ Flask web server accepting voice message uploads from Android
+- ✅ PWA interface for Android recording (press & hold to record, release to send)
+- ✅ Message storage and retrieval system (polling-based for reliability)
+- ✅ Windows playback via VLC media player
+- ✅ System tray indicator with basic menu
+- ✅ Two-way intercom capability (Windows can send messages back to Android)
+- ✅ Tailscale networking awareness
+- ✅ QR code generation and clipboard auto-copy on server startup
+- ✅ Config persistence to `~/.voice_relay/config.yaml`
+- ✅ Enhanced PWA interface with connection status, recording feedback, message list
+- ✅ OGG/Opus audio format for mobile-friendly recordings
+- ✅ One-command setup script (`setup.sh`)
 
-## 📦 Installation
-
-### Prerequisites
-
-```bash
-# Install dependencies
-pip install flask qrcode pyyaml
-
-# Optional: system tray (Linux)
-pip install pystray pillow
-
-# Optional: Windows service
-# Install NSSM from https://nssm.nssm.us/
-```
-
-### Start the Server
-
-```bash
-# Basic startup (config saved to ~/.voice_relay/config.yaml)
-python3 simplified_server.py
-
-# With system tray (Linux only)
-python3 simplified_server.py --tray
-
-# Quick QR only (no server)
-python3 simplified_server.py --test-qr --host 0.0.0.0 --port 5000
-```
-
-### Connect from Android
-
-1. QR code appears automatically on first startup
-2. Or URL is copied to clipboard
-3. Open on Android browser
-4. Grant microphone permission
-5. "Press & Hold to Record" → release to send
-6. Message appears on Windows PC; click Play to listen
-
-### Windows Playback
-
-- Messages stored in `voice_messages/` directory
-- Play via VLC media player (recommended)
-- Or click Play button in the PWA interface
-- Messages can be deleted from the interface
-
-## 📖 Documentation
-
-| Document | Description |
-|----------|-------------|
-| [`README.md`](README.md) | This file - quick start and overview |
-| [`OMARCHY_2_AI_HELPERS_ROADMAP.md`](OMARCHY_2_AI_HELPERS_ROADMAP.md) | Omarchy 2 AI helpers future roadmap |
-| [`OMARCHY_INTEGRATION_GUIDE.md`](OMARCHY_INTEGRATION_GUIDE.md) | Omarchy + Voice Relay integration details |
-| [`setup.sh`](setup.sh) | One-command setup script |
-| [`.gitignore`](.gitignore) | Git exclusions |
-| [`LICENSE`](LICENSE) | Project license |
-
-## 🌐 Tailscale Networking
-
-For remote access over the internet:
-
-1. Install Tailscale on both Android and Windows
-2. Run `tailscale up` on both devices
-3. Start the server: `python3 simplified_server.py`
-4. QR code automatically shows Tailscale IP (`100.91.11.2` on this machine)
-5. Messages travel through secure Tailscale mesh VPN
-
-```bash
-# Verify Tailscale connection
-tailscale status
-
-# Server auto-detects Tailscale IP
-# No manual host configuration needed
-```
-
-## 🔧 Configuration
-
-Server settings saved to `~/.voice_relay/config.yaml`:
-
-```yaml
-host: "0.0.0.0"  # Auto-detected, or Tailscale IP like "100.91.11.2"
-port: 5000
-```
-
-On subsequent runs, config is loaded automatically. Change host/port with `--host` and `--port` flags.
-
-## 🎯 Workflow Examples
-
-### Local Use (Linux + Android + Windows)
-
-```bash
-# Start server on Linux Omarchy
-python3 simplified_server.py  # QR appears, URL copied
-
-# Throughout day:
-# Android scans QR or opens http://100.91.11.2:5000
-# Records messages → appear on Linux machine
-# Click Play to listen through speakers
-
-# Tailscale enables remote access anytime
-```
-
-### Remote Work (Windows + Android Away from Home)
-
-```powershell
-; On Windows PC:
-python simplified_server.py  ; NSSM service keeps it running
-
-; On Android (anywhere with internet):
-1. Ensure Tailscale is running
-2. Open browser to Tailscale URL
-3. Record and send voice messages
-4. Messages play through Windows speakers
-
-; Benefits: works from anywhere, no port forwarding needed
-```
-
-### Development / Testing
-
-```bash
-# Quick test locally
-python3 simplified_server.py --host 127.0.0.1 --port 5000
-
-# Test QR generation
-python3 simplified_server.py --test-qr
-
-# Run endpoint tests
-python3 -c "import sys; sys.path.insert(0, '.'); from simplified_server import app; ..."
-
-# Full test suite
-python3 tests/ -q  # if running CI
-```
-
-## 🛠️ Troubleshooting
-
-| Problem | Solution |
-|---------|----------|
-| "Connection refused" on Android | - Ensure server running<br>- Check host/port<br>- Try http://localhost:5000<br>- Verify Tailscale (`tailscale up`) |
-| QR code not scanning | - Try manual URL entry<br>- Use `--test-qr` to verify<br>- Check camera permissions |
-| No messages appearing | - Check `voice_messages/` exists<br>- Verify upload succeeded<br>- Poll `/messages` endpoint<br>- Check recipient filter |
-| Audio won't play | - Ensure VLC installed<br>- Check OGG/Opus format<br>- Try different player<br>- Verify file permissions |
-| Tailscale IP not showing | - Run `tailscale up` first<br>- Same network/cluster required<br>- Check firewall rules |
-| Server crashes on startup | - Python 3.10+ required<br>- Install dependencies<br>- Review logs: `python3 simplified_server.py 2>&1` |
-
-### Recovery
-
-```bash
-# Reset config to defaults
-rm ~/.voice_relay/config.yaml
-python3 simplified_server.py  # Re-generates
-
-# Clear messages
-rm -rf voice_messages/*
-
-# Restart server
-pkill -f simplified_server
-python3 simplified_server.py
-```
-
-## 📁 Project Structure
-
+## Repository Structure
 ```
 voice_relay/
-├── simplified_server.py    # Main Flask server (648 lines) - **UPDATED**
-├── windows_service.py     # NSSM Windows service wrapper
-├── setup.sh               # One-command setup script
-├── README.md              # **Project overview & integration guide**
-├── OMARCHY_2_AI_HELPERS_ROADMAP.md  # AI helpers future roadmap
-├── OMARCHY_INTEGRATION_GUIDE.md   # Omarchy + voice relay integration
-├── .gitignore             # Git exclusions - **UPDATED**
-├── voice_messages/        # Output directory for received messages
-├── voice_relay_service.py # Windows service helper
-└── .git/                  # Git repository
+├── simplified_server.py          # Main Flask server with PWA interface
+├── setup.sh                     # One-command setup script
+├── voice_messages/              # Output directory for received voice messages
+├── windows_service.py           # Windows service wrapper for NSSM
+├── voice_relay_service.py       # Windows service management script
+├── .gitignore                   # Python/git exclusions
+├── AGENTS.md                    # Agent governance & git hygiene rules
+├── LICENSE                      # MIT License
+├── OMARCHY_2_AI_HELPERS_ROADMAP.md  # AI helpers roadmap (separate project interest)
+├── OMARCHY_INTEGRATION_GUIDE.md   # Omarchy + voice relay integration details
+├── README.md                    # Project overview (this file)
+└── .github/
+    ├── ISSUE_TEMPLATE/          # Issue templates for roadmap phases
+    │   ├── phase-1-foundation.yml
+    │   ├── phase-2-context.yml
+    │   ├── phase-3-assistants.yml
+    │   ├── phase4-automation.yml
+    │   └── phase5-ecosystem.yml
+    └── PULL_REQUEST_TEMPLATE.md # Standardized PR template
 ```
 
-## 📜 License
+## Installation
 
-MIT License - free to use, modify, and distribute.
+### One-Command Setup
+```bash
+chmod +x setup.sh
+./setup.sh
+```
 
-## 🤝 Related Projects
+### Manual Setup
+```bash
+# 1. Clone the repository
+git clone https://github.com/reverb256/voice_relay.git
+cd voice_relay
 
-- **Omarchy 2**: Beautiful, modern Linux distribution ([omarchy.org](https://omarchy.org))
-- **Tailscale**: Secure mesh VPN ([tailscale.com](https://tailscale.com))
-- **NSSM**: Non-Sucking Service Manager ([nssm.nssm.us](https://nssm.nssm.us))
-- **Flask**: Python web framework ([palletsprojects.com/p/flask/](https://palletsprojects.com/p/flask/))
+# 2. Install dependencies
+pip install flask pyyaml qrcode pillow plyer pystray
 
-## 💬 Getting Help
+# 3. Run the server
+python3 simplified_server.py
 
-- **GitHub Issues**: Report bugs or feature requests at the GitHub repo
-- **Documentation**: See individual doc files for detailed guides
-- **Community**: Your existing Omarchy repos provide patterns and examples
+# 4. Access the PWA interface
+#    Open on Android: http://<server-ip>:5000
+#    Or scan the QR code displayed on startup
 
----
+# 5. For Windows background service
+#    Install NSSM and use windows_service.py
+```
 
-*Voice Relay Intercom - Android to Windows voice message relay*
-*Last updated: November 2026*
+### Tailscale Configuration
+The server auto-detects Tailscale IP (`100.91.11.2` on this machine). 
+- Ensure Tailscale is running on both Android and Windows
+- Use the Tailscale IP for cross-device connectivity
+- QR code on server startup shows the connection URL
+
+### Windows NSSM Service
+```bash
+# Install NSSM and set up background service
+python3 windows_service.py
+# Follow the interactive prompts
+```
+
+## API Endpoints
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/` | GET | PWA interface with QR code |
+| `/health` | GET | Health check |
+| `/upload` | POST | Upload voice message from Android |
+| `/messages` | GET | List messages for recipient |
+| `/message/<filename>` | GET | Play/retrieve a specific message |
+| `/message/<filename>` | DELETE | Delete a message |
+
+## Audio Format
+- **Format**: OGG/Opus
+- **Mobile-friendly**: Small file sizes, good quality
+- **Storage**: `voice_messages/` directory
+- **Playback**: VLC media player (Windows), any OGG-capable player
+
+## Two-Way Intercom
+- Android → Windows: Record and send voice messages
+- Windows → Android: Send messages back via the same API
+- Message polling ensures reliable delivery
+
+## Configuration
+- Saved to `~/.voice_relay/config.yaml`
+- Contains: `host` and `port`
+- Loads on subsequent server runs
+- Auto-detects Tailscale IP (`100.91.11.2`)
+
+## License
+MIT License - see LICENSE file for details.
+
+## Git Hygiene
+Follow the rules in `AGENTS.md`:
+- Never run `git add -A`, `git add .`, `git add --all`
+- Never commit tool/session state files (.freebuff/, .sisyphus/, etc.)
+- Stage explicit paths: `git add <path> [<path> ...]`
