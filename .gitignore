@@ -4,20 +4,30 @@ __pycache__/
 *.pyo
 *.pyd
 *.egg-info/
+.dist/
+.coverage
 .env
 *.env.*
-.pytest_cache/
+
+# Voice messages (generated data)
+voice_messages/
+
+# Config (persistent across runs)
+.voice_relay/
+
+# Tray icons and temporary files
+*.png
+*.ico
+
+# OS specific
+.DS_Store
+Thumbs.db
 
 # Virtual environments
 venv/
 env/
-ENV/
+.venv/
 
-# Logs
-*.log
-
-# Tray icon files
-*.ico
-
-# System specific
-.DS_Store
+# Backup files
+*.bak
+*~
