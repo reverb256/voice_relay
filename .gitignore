@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.env
+*.env.*
+.pytest_cache/
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# Logs
+*.log
+
+# Tray icon files
+*.ico
+
+# System specific
+.DS_Store
