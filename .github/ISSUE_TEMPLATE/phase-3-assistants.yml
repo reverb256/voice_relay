@@ -1,0 +1,45 @@
+name: Phase 3 - Modal AI Assistants
+description: Interactive AI sessions within the shell
+title: "[Phase 3] <short description>"
+labels: [AI, chat, assistants, medium-priority]
+
+body:
+  - type: textarea
+    id: description
+    attributes:
+      description: Description
+      placeholder: What AI capabilities will be exposed? Chat interface design?
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      description: Acceptance Criteria
+      placeholder: |
+        - [ ] Criterion 1
+        - [ ] Criterion 2
+        - [ ] Criterion 3
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      description: Priority
+      options:
+        - Low
+        - Medium
+      default: Medium
+    validations:
+      required: true
+
+  - type: dropdown
+    id: type
+    attributes:
+      description: Issue Type
+      options:
+        - New Feature
+        - Enhancement
+    validations:
+      required: true

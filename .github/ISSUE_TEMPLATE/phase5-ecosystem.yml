@@ -1,0 +1,44 @@
+name: Phase 5 - Ecosystem & Extensibility
+description: Developer API and community contributions
+title: "[Phase 5] <short description>"
+labels: [AI, ecosystem, extensibility, low-priority]
+
+body:
+  - type: textarea
+    id: description
+    attributes:
+      description: Description
+      placeholder: What developer tools will be exposed? Marketplace design?
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      description: Acceptance Criteria
+      placeholder: |
+        - [ ] Criterion 1
+        - [ ] Criterion 2
+        - [ ] Criterion 3
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      description: Priority
+      options:
+        - Low
+      default: Low
+    validations:
+      required: true
+
+  - type: dropdown
+    id: type
+    attributes:
+      description: Issue Type
+      options:
+        - New Feature
+        - Enhancement
+    validations:
+      required: true

@@ -1,0 +1,49 @@
+name: Phase 1 - Foundation AI Infrastructure
+description: Core AI infrastructure for Omarchy 2
+title: "[Phase 1] <short description>"
+labels: [AI, infrastructure, foundation, high-priority]
+
+body:
+  - type: textarea
+    id: description
+    attributes:
+      description: Description
+      placeholder: What does this implement? What problem does it solve?
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      description: Acceptance Criteria
+      placeholder: |
+        - [ ] Criterion 1
+        - [ ] Criterion 2
+        - [ ] Criterion 3
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      description: Priority
+      options:
+        - Low
+        - Medium
+        - High
+        - Critical
+      default: High
+    validations:
+      required: true
+
+  - type: dropdown
+    id: type
+    attributes:
+      description: Issue Type
+      options:
+        - New Feature
+        - Bug Fix
+        - Enhancement
+        - Refactoring
+    validations:
+      required: true
